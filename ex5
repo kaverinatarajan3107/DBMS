@@ -1,0 +1,40 @@
+//In SQL, id is the primary key for this table.
+id is an autoincrement column starting from 1.
+ to implement a solution to Find all numbers that appear at least three times consecutively.
+SELECT DISTINCT l1.num AS ConsecutiveNums
+FROM Logs l1
+JOIN Logs l2 
+ON l1.id = l2.id - 1
+JOIN Logs l3 
+ON l2.id = l3.id - 1
+WHERE l1.num = l2.num 
+AND l2.num = l3.num;
+
+//id is the primary key (column with unique values) for this table.
+The table holds all taxi trips. Each trip has a unique id, while client_id and driver_id are foreign keys to the users_id at the Users table.
+Status is an ENUM (category) type of ('completed', 'cancelled_by_driver', 'cancelled_by_client').
+The cancellation rate is computed by dividing the number of canceled (by client or driver) requests with unbanned users by the total number of requests with unbanned users on that day.
+to implement  a solution to find the cancellation rate of requests with unbanned users (both client and driver must not be banned) each day between "2013-10-01" and "2013-10-03" with at least one trip. 
+Round Cancellation Rate to two decimal points.
+
+SELECT 
+    t.request_at AS Day,
+    ROUND(
+        SUM(CASE 
+                WHEN t.status != 'completed' THEN 1 
+                ELSE 0 
+            END) / COUNT(*), 
+        2
+    ) AS "Cancellation Rate"
+FROM Trips t
+JOIN Users c 
+    ON t.client_id = c.users_id
+JOIN Users d 
+    ON t.driver_id = d.users_id
+WHERE c.banned = 'No'
+  AND d.banned = 'No'
+  AND t.request_at BETWEEN '2013-10-01' AND '2013-10-03'
+GROUP BY t.request_at;
+
+
+
